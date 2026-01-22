@@ -9,7 +9,8 @@ declare -A PARAMS
 # 默认值
 PARAMS[build_all]="false"
 PARAMS[build_pre]="true"
-# arrch64, x86_64
+PARAMS[download_proxy]="true"
+# aarch64, x86_64
 PARAMS[arch]="x86_64"
 # 解析 key=value 格式的参数
 for arg in "$@"; do
@@ -32,6 +33,7 @@ done
 
 build_all="${PARAMS[build_all]}"
 build_pre="${PARAMS[build_pre]}"
+download_proxy="${PARAMS[download_proxy]}"
 arch="${PARAMS[arch]}"
 echo "build_all: ${build_all}"
 echo "build_pre: ${build_pre}"
@@ -81,6 +83,11 @@ get_smartdns_latest_version() {
 }
 
 get_smartdns_version() {
+    if [ "${arch}" != "$(uname -m)" ]; then
+        echo "非当前系统架构，跳过获取已安装smartdns版本"
+        SMARTDNS_VERSION=$SMARTDNS_LATEST_VERSION
+        return 0
+    fi
     local bin_dir=$BIN_DIR
     if [ -f "${bin_dir}/run-smartdns" ]; then
         local version_output=$("${bin_dir}/run-smartdns" -v 2>&1)
@@ -100,10 +107,10 @@ get_smartdns_version() {
 
 download_smartdns() {
     DOWNLOAD_FILE="smartdns-${arch}.tar.gz"
-    if [ "${build_all}" == "all" ] || [ ! -f "${DOWNLOAD_FILE}" ] ; then
-        local proxy_url
-        # proxy_url="https://gh.llkk.cc"
-        if [ -n "$proxy_url" ]; then
+    # 非当前系统，强制下载最新版本，避免后续版本判断错误
+    if [ "${build_all}" == "all" ] || [ ! -f "${DOWNLOAD_FILE}" ] || [ "${arch}" != "$(uname -m)" ]; then
+        local proxy_url="https://gh.llkk.cc"
+        if [ "$download_proxy" == "true" ]; then
             SMARTDNS_DOWNLOAD_URL=${proxy_url}/${SMARTDNS_DOWNLOAD_URL}
         fi
         echo "开始下载: ${SMARTDNS_DOWNLOAD_URL}"
@@ -142,7 +149,7 @@ build_fpk() {
     get_smartdns_version
     local fpk_version="${SMARTDNS_VERSION}-${BUILD_VERSION}"
     if [ "$build_pre" == 'true' ];then 
-        cur_time=$(date +"%Y%m%d%H%M%S")
+        cur_time=$(date +"%Y%m%d-%H%M%S")
         echo "当前时间：$cur_time"
         fpk_version="${fpk_version}-${cur_time}"
     fi
