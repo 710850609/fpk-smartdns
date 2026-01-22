@@ -42,7 +42,7 @@ echo "arch: ${arch}"
 platform="all"
 if [ "${arch}" == "x86_64" ]; then
     platform="x86"
-elif [ "${arch}" == "arrch64" ]; then
+elif [ "${arch}" == "aarch64" ]; then
     platform="arm"
 # elif [ "${arch}" == "linux-riscv64" ]; then
 #     platform="risc-v"
@@ -101,8 +101,11 @@ get_smartdns_version() {
 download_smartdns() {
     DOWNLOAD_FILE="smartdns-${arch}.tar.gz"
     if [ "${build_all}" == "all" ] || [ ! -f "${DOWNLOAD_FILE}" ] ; then
-        local proxy_url="https://gh.llkk.cc"
-        SMARTDNS_DOWNLOAD_URL=${proxy_url}/${SMARTDNS_DOWNLOAD_URL}
+        local proxy_url
+        # proxy_url="https://gh.llkk.cc"
+        if [ -n "$proxy_url" ]; then
+            SMARTDNS_DOWNLOAD_URL=${proxy_url}/${SMARTDNS_DOWNLOAD_URL}
+        fi
         echo "开始下载: ${SMARTDNS_DOWNLOAD_URL}"
         rm -f "${DOWNLOAD_FILE}"
         wget -O "${DOWNLOAD_FILE}" "${SMARTDNS_DOWNLOAD_URL}"
