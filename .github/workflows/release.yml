@@ -13,7 +13,7 @@ jobs:
   setup:
     runs-on: ubuntu-latest
     outputs:
-      prerelease: ${{ steps.set-tag.outputs.prerelease }}
+      prerelease: ${{ steps.set-prerelease.outputs.prerelease }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
