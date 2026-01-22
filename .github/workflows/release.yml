@@ -54,7 +54,7 @@ jobs:
 
       - name: Run build
         run: |
-          echo "开始构建架构: ${{ matrix.arch }}"
+          echo "开始构建架构: ${{ matrix.arch }}, 正式发布: ${{ needs.setup.outputs.prerelease }}"
           chmod +x ./fnpack.sh 2>/dev/null || true
           chmod +x ./build.sh 2>/dev/null || true
           ./build.sh arch=${{ matrix.arch }} build_pre="${{ needs.setup.outputs.prerelease }}" build_all="true" 2>/dev/null || true
@@ -90,7 +90,7 @@ jobs:
             exit 1
           fi
           # 读取版本号
-          version=$(sed -n 's/^[[:space:]]*version[[:space:]]*=[[:space:]]*//p' ./OpenList/manifest | sed 's/^"\|"$//g')
+          version=$(sed -n 's/^[[:space:]]*version[[:space:]]*=[[:space:]]*//p' ./smartdns/manifest | sed 's/^"\|"$//g')
           echo "构建FPK版本: $version"
           echo "version=$version" >> $GITHUB_OUTPUT
 
