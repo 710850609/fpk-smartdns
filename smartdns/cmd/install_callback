@@ -5,9 +5,9 @@ source "$(dirname ${BASH_SOURCE[0]})/common"
 
 ensure_exists_cfg_file() {
     if [ ! -f "${CFG_FILE}" ]; then
-        bash -c "mkdir -p "$(dirname ${CFG_FILE})"" >> ${LOG_FILE} 2>&1
+        mkdir -p "$(dirname ${CFG_FILE})" >> "${LOG_FILE}" 2>&1 || alarm_and_exit "无法创建配置文件目录: $(dirname ${CFG_FILE})"
         log_msg "创建配置文件目录: $(dirname ${CFG_FILE})"
-        bash -c "cp -f ${TRIM_APPDEST}/smartdns/smartdns.conf ${CFG_FILE}" >> ${LOG_FILE} 2>&1
+        cp -f "${TRIM_APPDEST}/bin/smartdns.conf" "${CFG_FILE}" >> "${LOG_FILE}" 2>&1 || alarm_and_exit "无法拷贝默认配置到: ${CFG_FILE}"
         log_msg "配置文件不存在，拷贝默认配置到: ${CFG_FILE}"
     fi
 }

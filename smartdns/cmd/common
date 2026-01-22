@@ -1,5 +1,6 @@
 #!/bin/bash
 set -e  # 遇到任何命令失败时立即终止脚本
+
 SHARE_DIR="${TRIM_APPDEST_VOL}/@appshare/${TRIM_APPNAME}"
 LOG_DIR="${SHARE_DIR}/logs"
 LOG_FILE="${LOG_DIR}/cmd.log"
@@ -8,15 +9,13 @@ DATA_DIR="${TRIM_PKGVAR}/data"
 
 log_msg() {
     if [ ! -d "${LOG_DIR}" ]; then
-        mkdir -p "${LOG_DIR}"
-        echo "$(date '+%Y-%m-%d %H:%M:%S') - 创建日志目录: ${LOG_DIR}" >> ${LOG_FILE}
+        mkdir -p "${LOG_DIR}" || alarm_and_exit "无法创建日志目录: ${LOG_DIR}"
+        echo "$(date '+%Y-%m-%d %H:%M:%S') - 创建日志目录: ${LOG_DIR}" >> "${LOG_FILE}"
     fi
-    echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" >> ${LOG_FILE}
+    echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" >> "${LOG_FILE}"
 }
 
 alarm_and_exit() {
-    # 在应用启动、安装、更新等过程中遇到错误时，可以向 TRIM_TEMP_LOGFILE 写入错误信息，然后退出脚本并返回错误码 1
-    # 系统会自动将错误日志在前端展示为用户可见的内容（Dialog对话框形式）
     log_msg "$1"
     echo "$1" > "${TRIM_TEMP_LOGFILE}"
     exit 1
@@ -32,7 +31,6 @@ str_trim() {
 check_port_in_use() {
     local port=$1
     local exclude_process=$2
-    # Linux 用 ss，没有 ss 再用 netstat
     if command -v ss >/dev/null 2>&1; then
         if [ -n "$exclude_process" ]; then
             ss -tlnp | grep -q ":$port " | grep -v "$exclude_process"
@@ -46,7 +44,6 @@ check_port_in_use() {
             netstat -tln | grep -q ":$port "
         fi
     else
-        # 都检测不到就保守一点：当“未占用”继续往下走
         return 1
     fi
 }
@@ -55,20 +52,16 @@ update_config() {
     local config_file=$CFG_FILE
     local config_key=$1
     local new_value=$2
-    local enable=$3  # 新增参数，用于控制启用或禁用
+    local enable=$3
 
-    # 检查配置文件是否存在
     if [ ! -f "$config_file" ]; then
         alarm_and_exit "配置文件 $config_file 不存在"
     fi
 
-    # 检查配置项是否存在
     if grep -q "^#*${config_key}" "$config_file"; then
         if [ "$enable" == "enable" ]; then
-            # 启用配置项
             sed -i "s|^#*${config_key}.*|${config_key} ${new_value}|" "$config_file"
         elif [ "$enable" == "disable" ]; then
-            # 禁用配置项
             sed -i "s|^#*${config_key}.*|#${config_key} ${new_value}|" "$config_file"
         else
             alarm_and_exit "无效的 enable 参数：$enable。有效值为 'enable' 或 'disable'。"
@@ -92,12 +85,14 @@ update_ui_config() {
         enable_ui="disable"
     fi
     log_msg "设置使用WebUI: ${enable_ui}"
-    update_config "plugin" "smartdns_ui.so" "${enable_ui}"
-    log_msg "设置WebUI端口: ${smartdns_ui_port}"
-    update_config "smartdns-ui.ip" "http://0.0.0.0:${smartdns_ui_port}" "${enable_ui}"
-    log_msg "设置WebUI账号: ${smartdns_ui_user}"
-    update_config "smartdns-ui.user" "${smartdns_ui_user}" "${enable_ui}"
-    log_msg "设置WebUI密码: ${smartdns_ui_password}"
-    update_config "smartdns-ui.password" "${smartdns_ui_password}" "${enable_ui}"
+    update_config "plugin" "smartdns_ui.so" "${enable_ui}" || alarm_and_exit "更新 plugin 配置失败"
 
+    log_msg "设置WebUI端口: ${smartdns_ui_port}"
+    update_config "smartdns-ui.ip" "http://0.0.0.0:${smartdns_ui_port}" "${enable_ui}" || alarm_and_exit "更新 smartdns-ui.ip 配置失败"
+
+    log_msg "设置WebUI账号: ${smartdns_ui_user}"
+    update_config "smartdns-ui.user" "${smartdns_ui_user}" "${enable_ui}" || alarm_and_exit "更新 smartdns-ui.user 配置失败"
+
+    log_msg "设置WebUI密码: ${smartdns_ui_password}"
+    update_config "smartdns-ui.password" "${smartdns_ui_password}" "${enable_ui}" || alarm_and_exit "更新 smartdns-ui.password 配置失败"
 }
