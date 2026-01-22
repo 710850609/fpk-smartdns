@@ -43,9 +43,9 @@ jobs:
     strategy:
       matrix:
         include:
-          - arch: linux-amd64
+          - arch: x86_64
             runner: ubuntu-latest
-          - arch: linux-arm64
+          - arch: arrch64
             runner: ubuntu-latest
     runs-on: ${{ matrix.runner }}
     steps:
@@ -111,16 +111,16 @@ jobs:
         run: |
           mkdir -p combined-release
     
-      - name: Download amd64 artifact
+      - name: Download x86_64 artifact
         uses: actions/download-artifact@v4
         with:
-          name: fpk-linux-amd64
+          name: fpk-x86_64
           path: combined-release
 
-      - name: Download arm64 artifact
+      - name: Download arrch64 artifact
         uses: actions/download-artifact@v4
         with:
-          name: fpk-linux-arm64
+          name: fpk-arrch64
           path: combined-release
 
       - name: Create GitHub Release
