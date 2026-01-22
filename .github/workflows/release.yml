@@ -58,7 +58,7 @@ jobs:
           echo "开始构建架构: ${{ matrix.arch }}, prerelease: ${{ needs.setup.outputs.prerelease }}"
           chmod +x ./fnpack.sh 2>/dev/null || true
           chmod +x ./build.sh 2>/dev/null || true
-          ./build.sh arch=${{ matrix.arch }} build_pre="${{ needs.setup.outputs.prerelease }}" build_all="true" 2>/dev/null || true
+          ./build.sh arch=${{ matrix.arch }} build_pre="${{ needs.setup.outputs.prerelease }}" build_all="true" download_proxy="false" 2>/dev/null || true
 
       - name: Prepare artifact
         run: |
