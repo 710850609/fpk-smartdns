@@ -34,6 +34,7 @@ jobs:
           else
             PRE=false
           fi
+          echo "当次构建是否prerelease: $PRE"
           echo "prerelease=$PRE" >> $GITHUB_OUTPUT
 
   build-multi-arch:
@@ -54,7 +55,7 @@ jobs:
 
       - name: Run build
         run: |
-          echo "开始构建架构: ${{ matrix.arch }}, 正式发布: ${{ needs.setup.outputs.prerelease }}"
+          echo "开始构建架构: ${{ matrix.arch }}, prerelease: ${{ needs.setup.outputs.prerelease }}"
           chmod +x ./fnpack.sh 2>/dev/null || true
           chmod +x ./build.sh 2>/dev/null || true
           ./build.sh arch=${{ matrix.arch }} build_pre="${{ needs.setup.outputs.prerelease }}" build_all="true" 2>/dev/null || true
@@ -74,7 +75,7 @@ jobs:
             echo "准备完成: $FPK_FILE"
           else
             # 正式版去除版本号
-            NEW_FPK_NAME="OpenList-${{ matrix.arch }}.fpk"
+            NEW_FPK_NAME="smartdns-${{ matrix.arch }}.fpk"
             cp "$FPK_FILE" "release/$NEW_FPK_NAME"
             echo "准备完成: $NEW_FPK_NAME"
           fi
