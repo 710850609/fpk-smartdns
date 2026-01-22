@@ -46,7 +46,7 @@ jobs:
         include:
           - arch: x86_64
             runner: ubuntu-latest
-          - arch: arrch64
+          - arch: aarch64
             runner: ubuntu-latest
     runs-on: ${{ matrix.runner }}
     steps:
@@ -118,10 +118,10 @@ jobs:
           name: fpk-x86_64
           path: combined-release
 
-      - name: Download arrch64 artifact
+      - name: Download aarch64 artifact
         uses: actions/download-artifact@v4
         with:
-          name: fpk-arrch64
+          name: fpk-aarch64
           path: combined-release
 
       - name: Create GitHub Release
