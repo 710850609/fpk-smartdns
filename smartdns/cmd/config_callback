@@ -1,0 +1,99 @@
+#!/bin/bash
+
+### This script is called after the user change environment variables in application setting page.
+set -e  # 遇到任何命令失败时立即终止脚本
+source "$(dirname ${BASH_SOURCE[0]})/common"
+
+get_smartdns_version() {
+    local bin_dir="${TRIM_APPDEST}/bin"
+    if [ -f "${bin_dir}/run-smartdns" ]; then
+        local version_output=$("${bin_dir}/run-smartdns" -v 2>&1)
+        local version=$(echo "$version_output" | grep -oP 'Release\K(\d+\.\d+)')
+        if [ -n "$version" ]; then
+            echo "$version"
+            return 0
+        else
+            alarm_and_exit "无法获取当前smartdns版本"
+        fi
+    else
+        alarm_and_exit "smartdns二进制文件不存在，无法获取版本"
+    fi
+}
+
+get_smartdns_download_url() {
+    # 获取系统架构
+    local arch_type
+    local uname_out=$(uname -m)
+    case "$uname_out" in
+        x86_64) arch_type="x86_64" ;;
+        aarch64) arch_type="aarch64" ;;
+        # loongarch64) arch_type="linux_arm64" ;;
+        # riscv64) arch_type="linux_riscv64" ;;
+        *)
+            alarm_and_exit "不支持当前系统架构 $uname_out 下载安装smartdns"
+            ;;
+    esac
+    log_msg "系统架构: ${arch_type}"
+    local download_version=$(str_trim "$1")
+    local api_url
+    if [ -z "$download_version" ]; then
+        api_url="https://api.github.com/repos/pymumu/smartdns/releases/latest"
+    else
+        api_url="https://api.github.com/repos/pymumu/smartdns/releases/tags/Release$download_version"
+    fi
+    local download_url=$(curl -s "$api_url" | grep "browser_download_url.*$arch_type-linux-all.tar.gz" | cut -d '"' -f 4)
+    if [ -z "$download_url" ]; then
+        alarm_and_exit "获取smartdns下载地址失败，请检查版本号或Github加速地址能否使用"
+    fi
+    local proxy_url=$(str_trim "$2")
+    if [[ -n "${proxy_url}" ]]; then
+        log_msg "使用代理下载: ${proxy_url}"
+        download_url="${proxy_url}/${download_url}"
+    fi
+    echo $download_url
+}
+
+install_smartdns_version() {
+    local cur_version=$(get_smartdns_version)
+    if [ "$cur_version" == "$smartdns_version" ]; then
+        log_msg "当前 SmartDNS 已是 ${smartdns_version} 版本，跳过安装指定版本"
+        return 0
+    fi
+    log_msg "当前 SmartDNS 版本: ${cur_version}，用户选择安装版本: ${smartdns_version}"
+    local download_url=$(get_smartdns_download_url "${smartdns_version}" "${download_proxy_url}")
+    log_msg "获取到 SmartDNS ${smartdns_version} 版本下载地址: ${download_url}"
+    local download_file="${TRIM_PKGVAR}/download/smartdns.tar.gz"
+    rm -f "${download_file}"
+    mkdir -p "$(dirname ${download_file})"
+    wget -O "${download_file}" "${download_url}"
+    if [ ! -f "${download_file}" ]; then
+        alarm_and_exit "下载smartdns失败"
+    fi
+    log_msg "下载smartdns完成，开始安装 SmartDNS ${smartdns_version} 版本"
+    local temp_dir="${TRIM_PKGVAR}/download/temp"
+    local bin_dir="${TRIM_APPDEST}/bin"
+    local next_bin_dir="${TRIM_APPDEST}/next_bin"
+    bash -c "rm -rf ${temp_dir}" 2>&1
+    bash -c "mkdir -p ${temp_dir}" 2>&1
+    log_msg "开始解压 ${download_file}"
+    bash -c "tar -xzf ${download_file} -C ${temp_dir}" 2>&1
+    log_msg "开始复制应用文件"
+    bash -c "rm -rf ${next_bin_dir}" 2>&1
+    bash -c "mkdir -p ${next_bin_dir}" 2>&1
+    bash -c "mv ${temp_dir}/smartdns/usr/local/lib/smartdns/* ${next_bin_dir}" 2>&1
+    bash -c "mv -f ${temp_dir}/smartdns/etc/smartdns/smartdns.conf ${next_bin_dir}" 2>&1
+    log_msg "迁移配置文件"
+    bash -c "cp -f ${bin_dir}/smartdns.conf ${next_bin_dir}/smartdns.conf" 2>&1
+    log_msg "替换smartdns版本"
+    bash -c "rm -rf ${bin_dir}" 2>&1
+    bash -c "mv -f ${next_bin_dir} ${bin_dir}" 2>&1
+    bash -c "rm -rf ${temp_dir}" 2>&1
+    log_msg "安装smartdns ${smartdns_version}版本完成"
+}
+
+
+update_config "bind" "[::]:${smartdns_dns_port}" "enable"
+update_ui_config
+install_smartdns_version
+
+exit 0

@@ -1,0 +1,106 @@
+[
+  {
+    "stepTitle": "运行配置",
+    "items": [
+      {
+        "type": "text",
+        "field": "smartdns_dns_port",
+        "label": "DNS服务端口",
+        "initValue": "53",
+        "rules": [
+          {
+            "required": true,
+            "message": "请输入DNS服务端口"
+          },
+          {
+            "pattern": "^[0-9]+$",
+            "message": "DNS服务端口必须是数字"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "field": "smartdns_version",
+        "label": "SmartDNS版本",
+        "initValue": "47.1",
+        "rules": [
+          {
+            "required": true,
+            "message": "请输入安装版本，如 47.1"
+          }
+        ]
+      },
+      {
+        "type": "tips",
+        "helpText": "修改版本请确认与当前版本配置的兼容性，避免无法启动服务。<a href=\"https://github.com/pymumu/smartdns/releases\" target=\"_blank\">官方所有版本</a>"
+      },
+      {
+        "type": "text",
+        "field": "download_proxy_url",
+        "label": "GitHub下载加速地址",
+        "initValue": "https://gh.llkk.cc"
+      },
+      {
+        "type": "tips",
+        "helpText": "如下载速度较慢，可尝试更换其他加速地址。如不需要，则留空不填"
+      }
+    ]
+  },
+  {
+    "stepTitle": "WebUI配置",
+    "items": [
+      {
+        "type": "switch",
+        "field": "smartdns_ui_enabled",
+        "label": "启用管理界面",
+        "initValue": "true"
+      },
+      {
+        "type": "text",
+        "field": "smartdns_ui_port",
+        "label": "WebUI服务端口",
+        "initValue": "6080",
+        "rules": [
+          {
+            "required": true,
+            "message": "请输入WebUI服务端口"
+          },
+          {
+            "pattern": "^[0-9]+$",
+            "message": "WebUI服务端口必须是数字"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "field": "smartdns_ui_user",
+        "label": "WebUI账号",
+        "rules": [
+          {
+            "required": true,
+            "message": "请输入WebUI账号"
+          },
+          {
+            "pattern": "^[a-zA-Z0-9_]+$",
+            "message": "账号只能包含字母、数字和下划线"
+          }
+        ]
+      },
+      {
+        "type": "password",
+        "field": "smartdns_ui_password",
+        "label": "WebUI密码",
+        "rules": [
+          {
+            "required": true,
+            "message": "请输入WebUI密码"
+          },
+          {
+            "min": 3,
+            "message": "密码长度不能少于3位"
+          }
+        ]
+      }
+    ]
+  }
+]

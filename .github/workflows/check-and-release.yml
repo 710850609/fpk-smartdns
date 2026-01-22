@@ -1,0 +1,38 @@
+name: Daily check release
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 4,7,10 * * *' 
+
+jobs:
+  job:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read        # 只需要读代码
+      actions: write        # ← 关键：允许触发 workflow_dispatch
+    steps:
+      - uses: actions/checkout@v4 
+
+      - name: Check if need a new release
+        id: need_release
+        run: |
+          REAL_VERSION=$(curl -s https://api.github.com/repos/pymumu/smartdns/releases/latest | jq -r .tag_name | sed 's/^Release//')
+          echo "获取最新版本: $REAL_VERSION"
+          echo "version=$REAL_VERSION" >> $GITHUB_OUTPUT
+          if git ls-remote --tags origin "refs/tags/release/$REAL_VERSION*" | grep -q .; then
+            echo "存在 release/$REAL_VERSION 开头的 tag"
+            echo "trigger=false" >> $GITHUB_OUTPUT
+          else
+            echo "不存在 release/$REAL_VERSION 开头的 tag"
+            echo "trigger=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Trigger release workflow
+        if: steps.need_release.outputs.trigger == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh workflow run release.yml \
+            --ref ${{ github.ref_name }}
+            

@@ -1,0 +1,13 @@
+{
+    ".url": {
+        "smartdns.Application": {
+            "title": "SmartDNS",
+            "icon": "images/icon_{0}.png",
+            "type": "url",
+            "protocol": "http",
+            "port": "${smartdns_ui_port}",
+            "url": "/",
+            "allUsers": false
+        }
+    }
+}

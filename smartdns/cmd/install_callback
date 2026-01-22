@@ -1,0 +1,23 @@
+#!/bin/bash
+
+### This script is called after the user installs the application.
+source "$(dirname ${BASH_SOURCE[0]})/common"
+
+ensure_exists_cfg_file() {
+    if [ ! -f "${CFG_FILE}" ]; then
+        bash -c "mkdir -p "$(dirname ${CFG_FILE})"" >> ${LOG_FILE} 2>&1
+        log_msg "创建配置文件目录: $(dirname ${CFG_FILE})"
+        bash -c "cp -f ${TRIM_APPDEST}/smartdns/smartdns.conf ${CFG_FILE}" >> ${LOG_FILE} 2>&1
+        log_msg "配置文件不存在，拷贝默认配置到: ${CFG_FILE}"
+    fi
+}
+
+ensure_exists_cfg_file
+# 设置日志文件路径、缓存文件路径 到应用专属动态数据目录
+update_config "log-file" "${LOG_DIR}/smartdns.log" "enable"
+update_config "cache-file" "${DATA_DIR}/cache/smartdns.cache" "enable"
+# 设置监听端口
+update_config "bind" "[::]:${smartdns_dns_port}" "enable"
+update_ui_config
+
+exit 0

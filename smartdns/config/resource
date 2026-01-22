@@ -1,0 +1,17 @@
+{
+    "data-share": {
+        "shares":
+        [
+            {
+                "name": "smartdns",
+                "permission":
+                {
+                    "rw":
+                    [
+                        "smartdns"
+                    ]
+                }
+            }
+        ]
+    }
+}

@@ -1,0 +1,99 @@
+[
+    {
+        "stepTitle": "使用协议",
+        "items": [
+            {
+                "type": "tips",
+                "helpText": "本程序需在以root身份运行，以支持使用DNS默认53端口的系统权限，提供DNS服务查询"
+            },
+            {
+                "type": "tips",
+                "helpText": "请遵守所在地法律法规，合理使用本软件"
+            },
+            {
+                "type": "switch",
+                "field": "agree_terms",
+                "label": "我已阅读并同意并遵守上述协议",
+                "rules": [
+                    {
+                        "required": true,
+                        "message": "请同意"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "stepTitle": "运行配置",
+        "items": [
+            {
+                "type": "text",
+                "field": "smartdns_dns_port",
+                "label": "DNS服务端口",
+                "initValue": "53",
+                "rules": [
+                    {
+                        "required": true,
+                        "message": "请输入DNS服务端口"
+                    },
+                    {
+                        "pattern": "^[0-9]+$",
+                        "message": "DNS服务端口必须是数字"
+                    }
+                ]
+            },
+            {
+                "type": "switch",
+                "field": "smartdns_ui_enabled",
+                "label": "WebUI管理界面",
+                "initValue": "true"
+            },
+            {
+                "type": "text",
+                "field": "smartdns_ui_port",
+                "label": "WebUI服务端口",
+                "initValue": "6080",
+                "rules": [
+                    {
+                        "required": true,
+                        "message": "请输入WebUI服务端口"
+                    },
+                    {
+                        "pattern": "^[0-9]+$",
+                        "message": "WebUI服务端口必须是数字"
+                    }
+                ]
+            },
+            {
+                "type": "text",
+                "field": "smartdns_ui_user",
+                "label": "WebUI账号",
+                "rules": [
+                    {
+                        "required": true,
+                        "message": "请输入WebUI账号"
+                    },
+                    {
+                        "pattern": "^[a-zA-Z0-9_]+$",
+                        "message": "账号只能包含字母、数字和下划线"
+                    }
+                ]
+            },            
+            {
+                "type": "password",
+                "field": "smartdns_ui_password",
+                "label": "WebUI密码",
+                "rules": [
+                    {
+                        "required": true,
+                        "message": "请输入WebUI密码"
+                    },
+                    {
+                        "min": 3,
+                        "message": "密码长度不能少于3位"
+                    }
+                ]
+            }
+        ]
+    }
+]

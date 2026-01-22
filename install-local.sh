@@ -1,0 +1,1 @@
+cd smartdns && sudo appcenter-cli install-local --env ../config.env && cd ../

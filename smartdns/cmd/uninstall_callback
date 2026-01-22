@@ -1,0 +1,15 @@
+#!/bin/bash
+
+### This script is called after the user uninstalls the application.
+
+source "$(dirname ${BASH_SOURCE[0]})/common"
+
+if [ "${wizard_data_action}" == "delete" ]; then
+    log_msg "卸载时删除所有数据"
+    bash -c "rm -rf ${CFG_FILE}" >> ${LOG_FILE} 2>&1
+    bash -c "rm -rf ${LOG_DIR}" >> ${LOG_FILE} 2>&1
+    bash -c "rm -rf ${TRIM_PKGVAR}" >> ${LOG_FILE} 2>&1
+else
+    log_msg "卸载时保留数据"
+fi
+exit 0
