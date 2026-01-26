@@ -1,4 +1,5 @@
 smartdns*.tar.gz
 smartdns*.fpk
 smartdns/app/bin
+smartdns/app/bin.tar.gz
 temp

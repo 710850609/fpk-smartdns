@@ -4,6 +4,9 @@
 
 source "$(dirname ${BASH_SOURCE[0]})/common"
 
+log_msg "卸载删除前端目录"
+rm -rf "/usr/share/smartdns" >> ${LOG_FILE} 2>&1 || alarm_and_exit "无法删除前端目录: /usr/share/smartdns"
+
 if [ "${wizard_data_action}" == "delete" ]; then
     log_msg "卸载时删除所有数据"
     bash -c "rm -rf ${CFG_FILE}" >> ${LOG_FILE} 2>&1

@@ -1,4 +1,4 @@
-BUILD_VERSION=001
+BUILD_VERSION=002
 SMARTDNS_LATEST_VERSION="unknown"
 SMARTDNS_DOWNLOAD_URL="unknown"
 DOWNLOAD_FILE="unknown"
@@ -134,19 +134,26 @@ update_app() {
     echo "开始复制应用文件"
     bash -c "mv ${temp_dir}/smartdns/usr/local/lib/smartdns/* ${bin_dir}" 2>&1
     bash -c "mv -f ${temp_dir}/smartdns/etc/smartdns/smartdns.conf ${bin_dir}" 2>&1
+    # 遇到有需要指定UI插件和UI前端
+    bash -c "mv -f ${temp_dir}/smartdns/usr/share/smartdns/wwwroot ${bin_dir}" 2>&1
     bash -c "rm -rf ${temp_dir}" 2>&1
     echo "更新应用文件完成"
-    echo "---------------------------------------"
     echo "$(ls -l ${bin_dir})"
     get_smartdns_version
     jq ".[0].items |= map(if .field == \"smartdns_version\" then .initValue = \"$SMARTDNS_VERSION\" else . end)" smartdns/wizard/config > temp.json \
     && mv temp.json smartdns/wizard/config
     echo "更新配置向导中的SmartDNS版本号为: ${SMARTDNS_VERSION}"
+    echo "---------------------------------------"
+    # 飞牛安装报错： chown /vol1/@appcenter/smartdns/bin/lib/ld-linux.so: too many levels of symbolic links
+    # 改用压缩，安装时再解压
+    tar -czf "smartdns/app/bin.tar.gz" -C "${bin_dir}" .
+    rm -rf "${bin_dir}"
+    echo "压缩为bin.tar.gz完成"
 }
 
 
 build_fpk() {
-    get_smartdns_version
+    # get_smartdns_version
     local fpk_version="${SMARTDNS_VERSION}-${BUILD_VERSION}"
     if [ "$build_pre" == 'true' ];then 
         cur_time=$(date +"%Y%m%d-%H%M%S")

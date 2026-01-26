@@ -4,11 +4,11 @@
         "items": [
             {
                 "type": "tips",
-                "helpText": "本程序需在以root身份运行，以支持使用DNS默认53端口的系统权限，提供DNS服务查询"
+                "helpText": "本程序需在以root身份运行，以支持使用DNS默认53端口、Ping命令测速等系统权限，以使用完整SmartDNS功能，更多权限请查阅<a href=\"https://pymumu.github.io/smartdns\" target=\"_blank\">SmartDNS官网说明</a>"
             },
             {
                 "type": "tips",
-                "helpText": "请遵守所在地法律法规，合理使用本软件"
+                "helpText": "请遵守所在地法律法规，合理合规使用软件"
             },
             {
                 "type": "switch",

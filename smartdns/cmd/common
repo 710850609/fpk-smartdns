@@ -60,17 +60,17 @@ update_config() {
 
     if grep -q "^#*${config_key}" "$config_file"; then
         if [ "$enable" == "enable" ]; then
-            sed -i "s|^#*${config_key}.*|${config_key} ${new_value}|" "$config_file"
+            sed -i "s|^#*${config_key}.*|${config_key} ${new_value}|" "$config_file" || alarm_and_exit "更新 ${config_key} 配置失败"
         elif [ "$enable" == "disable" ]; then
-            sed -i "s|^#*${config_key}.*|#${config_key} ${new_value}|" "$config_file"
+            sed -i "s|^#*${config_key}.*|#${config_key} ${new_value}|" "$config_file" || alarm_and_exit "更新 ${config_key} 配置失败"
         else
             alarm_and_exit "无效的 enable 参数：$enable。有效值为 'enable' 或 'disable'。"
         fi
     else
         if [ "$enable" == "enable" ]; then
-            echo "${config_key} ${new_value}" >> "$config_file"
+            echo "${config_key} ${new_value}" >> "$config_file" || alarm_and_exit "写入 ${config_key} 配置失败"
         elif [ "$enable" == "disable" ]; then
-            echo "#${config_key} ${new_value}" >> "$config_file"
+            echo "#${config_key} ${new_value}" >> "$config_file" || alarm_and_exit "写入 ${config_key} 配置失败"
         else
             alarm_and_exit "无效的 enable 参数：$enable。有效值为 'enable' 或 'disable'。"
         fi
@@ -85,7 +85,17 @@ update_ui_config() {
         enable_ui="disable"
     fi
     log_msg "设置使用WebUI: ${enable_ui}"
-    update_config "plugin" "smartdns_ui.so" "${enable_ui}" || alarm_and_exit "更新 plugin 配置失败"
+    log_msg "设置UI插件: ${TRIM_APPDEST}/bin/smartdns_ui.so"
+    update_config "plugin" "${TRIM_APPDEST}/bin/smartdns_ui.so" "${enable_ui}" || alarm_and_exit "更新 plugin 配置失败"
+    chmod 777 "${TRIM_APPDEST}/bin/smartdns_ui.so" || alarm_and_exit "设置 UI 插件执行权限失败"
+    
+    # 此方式未生效，只能用默认路径，并且软连接也不生效，必须拷贝文件
+    # log_msg "设置UI前端目录: ${TRIM_APPDEST}/bin/wwwroot"
+    # update_config "smartdns-ui.www-root" "${TRIM_APPDEST}/bin/wwwroot" "enable"
+    
+    local frontend_dir="/usr/share/smartdns"
+    bash -c "rm -rf ${frontend_dir} && mkdir -p ${frontend_dir} && cp -rf ${TRIM_APPDEST}/bin/wwwroot ${frontend_dir}" >> ${LOG_FILE} 2>&1 || alarm_and_exit "复制前端失败"
+    log_msg "创建前端：/usr/share/smartdns/wwwroot"
 
     log_msg "设置WebUI端口: ${smartdns_ui_port}"
     update_config "smartdns-ui.ip" "http://0.0.0.0:${smartdns_ui_port}" "${enable_ui}" || alarm_and_exit "更新 smartdns-ui.ip 配置失败"
