@@ -91,8 +91,10 @@ install_smartdns_version() {
     log_msg "安装smartdns ${smartdns_version}版本完成"
 }
 
-
+update_config "log-level" "${smartdns_log_level}" "enable"
+log_msg "设置日志级别: ${smartdns_log_level}"
 update_config "bind" "[::]:${smartdns_dns_port}" "enable"
+log_msg "设置DNS监听端口: ${smartdns_dns_port}"
 update_ui_config
 install_smartdns_version
 

@@ -89,13 +89,10 @@ update_ui_config() {
     update_config "plugin" "${TRIM_APPDEST}/bin/smartdns_ui.so" "${enable_ui}" || alarm_and_exit "更新 plugin 配置失败"
     chmod 777 "${TRIM_APPDEST}/bin/smartdns_ui.so" || alarm_and_exit "设置 UI 插件执行权限失败"
     
-    # 此方式未生效，只能用默认路径，并且软连接也不生效，必须拷贝文件
-    # log_msg "设置UI前端目录: ${TRIM_APPDEST}/bin/wwwroot"
-    # update_config "smartdns-ui.www-root" "${TRIM_APPDEST}/bin/wwwroot" "enable"
-    
-    local frontend_dir="/usr/share/smartdns"
-    bash -c "rm -rf ${frontend_dir} && mkdir -p ${frontend_dir} && cp -rf ${TRIM_APPDEST}/bin/wwwroot ${frontend_dir}" >> ${LOG_FILE} 2>&1 || alarm_and_exit "复制前端失败"
-    log_msg "创建前端：/usr/share/smartdns/wwwroot"
+    log_msg "设置UI前端目录: ${TRIM_APPDEST}/bin/wwwroot"
+    update_config "smartdns-ui.www-root" "${TRIM_APPDEST}/bin/wwwroot" "enable"
+    # 必须有权限读取
+    chmod -R a+r "${TRIM_APPDEST}/bin/wwwroot" || alarm_and_exit "设置 UI 前端目录读取权限失败"
 
     log_msg "设置WebUI端口: ${smartdns_ui_port}"
     update_config "smartdns-ui.ip" "http://0.0.0.0:${smartdns_ui_port}" "${enable_ui}" || alarm_and_exit "更新 smartdns-ui.ip 配置失败"

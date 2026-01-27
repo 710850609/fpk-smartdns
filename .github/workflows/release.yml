@@ -70,15 +70,17 @@ jobs:
           fi
           
           mkdir -p release
-          if [ "${{ needs.setup.outputs.prerelease }}" == "true" ]; then
-            cp "$FPK_FILE" "release/$FPK_FILE"
-            echo "准备完成: $FPK_FILE"
-          else
-            # 正式版去除版本号
-            NEW_FPK_NAME="smartdns-${{ matrix.arch }}.fpk"
-            cp "$FPK_FILE" "release/$NEW_FPK_NAME"
-            echo "准备完成: $NEW_FPK_NAME"
-          fi
+          cp "$FPK_FILE" "release/$FPK_FILE"
+          echo "准备完成: $FPK_FILE"
+          # if [ "${{ needs.setup.outputs.prerelease }}" == "true" ]; then
+          #   cp "$FPK_FILE" "release/$FPK_FILE"
+          #   echo "准备完成: $FPK_FILE"
+          # else
+          #   # 正式版去除版本号
+          #   NEW_FPK_NAME="smartdns-${{ matrix.arch }}.fpk"
+          #   cp "$FPK_FILE" "release/$NEW_FPK_NAME"
+          #   echo "准备完成: $NEW_FPK_NAME"
+          # fi
 
       - name: Get release version
         id: release-version

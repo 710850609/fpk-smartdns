@@ -1,4 +1,4 @@
-BUILD_VERSION=002
+BUILD_VERSION=003
 SMARTDNS_LATEST_VERSION="unknown"
 SMARTDNS_DOWNLOAD_URL="unknown"
 DOWNLOAD_FILE="unknown"
@@ -132,16 +132,15 @@ update_app() {
     echo "开始解压 ${DOWNLOAD_FILE}"
     bash -c "tar -xzf ${DOWNLOAD_FILE} -C ${temp_dir}" 2>&1
     echo "开始复制应用文件"
-    bash -c "mv ${temp_dir}/smartdns/usr/local/lib/smartdns/* ${bin_dir}" 2>&1
-    bash -c "mv -f ${temp_dir}/smartdns/etc/smartdns/smartdns.conf ${bin_dir}" 2>&1
+    bash -c "cp -rf ${temp_dir}/smartdns/usr/local/lib/smartdns/* ${bin_dir}" 2>&1
+    bash -c "cp -rf ${temp_dir}/smartdns/etc/smartdns/smartdns.conf ${bin_dir}" 2>&1
     # 遇到有需要指定UI插件和UI前端
     bash -c "mv -f ${temp_dir}/smartdns/usr/share/smartdns/wwwroot ${bin_dir}" 2>&1
     bash -c "rm -rf ${temp_dir}" 2>&1
     echo "更新应用文件完成"
-    echo "$(ls -l ${bin_dir})"
     get_smartdns_version
     jq ".[0].items |= map(if .field == \"smartdns_version\" then .initValue = \"$SMARTDNS_VERSION\" else . end)" smartdns/wizard/config > temp.json \
-    && mv temp.json smartdns/wizard/config
+    && mv temp.json smartdns/wizard/config || echo "更新 wizard config 失败"
     echo "更新配置向导中的SmartDNS版本号为: ${SMARTDNS_VERSION}"
     echo "---------------------------------------"
     # 飞牛安装报错： chown /vol1/@appcenter/smartdns/bin/lib/ld-linux.so: too many levels of symbolic links
@@ -156,12 +155,14 @@ build_fpk() {
     # get_smartdns_version
     local fpk_version="${SMARTDNS_VERSION}-${BUILD_VERSION}"
     if [ "$build_pre" == 'true' ];then 
-        cur_time=$(date +"%Y%m%d-%H%M%S")
+        cur_time=$(date +"%Y%m%d_%H%M%S")
         echo "当前时间：$cur_time"
         fpk_version="${fpk_version}-${cur_time}"
     fi
     sed -i "s|^[[:space:]]*version[[:space:]]*=.*|version=${fpk_version}|" 'smartdns/manifest'
     echo "设置 FPK 版本号为: ${fpk_version}"
+    sed -i "s|^[[:space:]]*platform[[:space:]]*=.*|platform=${platform}|" 'smartdns/manifest'
+    echo "设置 platform 为: ${platform}"
 
     echo "开始打包 fpk"
     if command -v fnpack >/dev/null 2>&1; then
@@ -172,7 +173,7 @@ build_fpk() {
         ./fnpack.sh build --directory smartdns || { echo "打包失败"; exit 1; }
     fi 
 
-    fpk_name="smartdns-${arch}-${fpk_version}.fpk"
+    fpk_name="smartdns-${fpk_version}-${platform}.fpk"
     rm -f "${fpk_name}"
     mv smartdns.fpk "${fpk_name}"
     echo "打包完成: ${fpk_name}"

@@ -102,5 +102,56 @@
         ]
       }
     ]
+  },
+  {
+    "stepTitle": "日志配置",
+    "items": [
+      {
+        "type": "select",
+        "field": "smartdns_log_level",
+        "label": "日志等级",
+        "initValue": "info",
+        "options": [
+          {
+            "label": "off",
+            "value": "off"
+          },
+          {
+            "label": "fatal",
+            "value": "fatal"
+          },
+          {
+            "label": "error",
+            "value": "error"
+          },
+          {
+            "label": "warn",
+            "value": "warn"
+          },
+          {
+            "label": "notice",
+            "value": "notice"
+          },
+          {
+            "label": "info",
+            "value": "info"
+          },
+          {
+            "label": "debug",
+            "value": "debug"
+          }
+        ],
+        "rules": [
+          {
+            "required": true,
+            "message": "请选择日志等级"
+          }
+        ]
+      },
+      {
+        "type": "tips",
+        "helpText": "<p>推荐info</p>按顺序依次产生的日志增多、详细: off < fatal < error < warn < notice < info < debug"
+      }
+    ]
   }
 ]
