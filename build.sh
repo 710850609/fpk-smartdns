@@ -42,10 +42,13 @@ echo "arch: ${arch}"
 
 # platform 取值 x86, arm, risc-v, all
 platform=""
+os_min_version="1.0.0"
 if [ "${arch}" == "x86" ]; then
     platform="x86"
+    os_min_version="1.1.8"
 elif [ "${arch}" == "arm" ]; then
     platform="arm"
+    os_min_version="1.0.2"
 # elif [ "${arch}" == "linux-riscv64" ]; then
 #     platform="risc-v"
 #     echo "脚本不支持riscv64"
@@ -160,9 +163,11 @@ build_fpk() {
         fpk_version="${fpk_version}-${cur_time}"
     fi
     sed -i "s|^[[:space:]]*version[[:space:]]*=.*|version=${fpk_version}|" 'smartdns/manifest'
-    echo "设置 FPK 版本号为: ${fpk_version}"
+    echo "设置 manifest 的 version 为: ${fpk_version}"
     sed -i "s|^[[:space:]]*platform[[:space:]]*=.*|platform=${platform}|" 'smartdns/manifest'
-    echo "设置 platform 为: ${platform}"
+    echo "设置 manifest 的 platform 为: ${platform}"
+    sed -i "s|^[[:space:]]*os_min_version[[:space:]]*=.*|os_min_version=${os_min_version}|" 'smartdns/manifest'
+    echo "设置 manifest 的 os_min_version 为: ${os_min_version}"
 
     echo "开始打包 fpk"
     if command -v fnpack >/dev/null 2>&1; then
