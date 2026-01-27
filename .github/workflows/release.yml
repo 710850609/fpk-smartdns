@@ -114,16 +114,16 @@ jobs:
         run: |
           mkdir -p combined-release
     
-      - name: Download x86_64 artifact
+      - name: Download x86 artifact
         uses: actions/download-artifact@v4
         with:
-          name: fpk-x86_64
+          name: fpk-x86
           path: combined-release
 
-      - name: Download aarch64 artifact
+      - name: Download arm artifact
         uses: actions/download-artifact@v4
         with:
-          name: fpk-aarch64
+          name: fpk-arm
           path: combined-release
 
       - name: Create GitHub Release
