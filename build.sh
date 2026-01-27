@@ -10,8 +10,7 @@ declare -A PARAMS
 PARAMS[build_all]="false"
 PARAMS[build_pre]="true"
 PARAMS[download_proxy]="true"
-# aarch64, x86_64
-PARAMS[arch]="x86_64"
+PARAMS[arch]="x86"
 # 解析 key=value 格式的参数
 for arg in "$@"; do
   if [[ "$arg" == *=* ]]; then
@@ -37,14 +36,15 @@ download_proxy="${PARAMS[download_proxy]}"
 arch="${PARAMS[arch]}"
 echo "build_all: ${build_all}"
 echo "build_pre: ${build_pre}"
+echo "download_proxy: ${download_proxy}"
 echo "arch: ${arch}"
 
 
 # platform 取值 x86, arm, risc-v, all
-platform="all"
-if [ "${arch}" == "x86_64" ]; then
+platform=""
+if [ "${arch}" == "x86" ]; then
     platform="x86"
-elif [ "${arch}" == "aarch64" ]; then
+elif [ "${arch}" == "arm" ]; then
     platform="arm"
 # elif [ "${arch}" == "linux-riscv64" ]; then
 #     platform="risc-v"

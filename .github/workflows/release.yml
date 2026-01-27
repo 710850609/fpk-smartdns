@@ -44,9 +44,9 @@ jobs:
     strategy:
       matrix:
         include:
-          - arch: x86_64
+          - arch: x86
             runner: ubuntu-latest
-          - arch: aarch64
+          - arch: arm
             runner: ubuntu-latest
     runs-on: ${{ matrix.runner }}
     steps:
