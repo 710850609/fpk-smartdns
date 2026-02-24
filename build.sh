@@ -1,4 +1,4 @@
-BUILD_VERSION=003
+BUILD_VERSION=004
 SMARTDNS_LATEST_VERSION="unknown"
 SMARTDNS_DOWNLOAD_URL="unknown"
 DOWNLOAD_FILE="unknown"
@@ -111,7 +111,7 @@ get_smartdns_version() {
 download_smartdns() {
     DOWNLOAD_FILE="smartdns-${arch}.tar.gz"
     # 非当前系统，强制下载最新版本，避免后续版本判断错误
-    if [ "${build_all}" == "all" ] || [ ! -f "${DOWNLOAD_FILE}" ] || [ "${arch}" != "$(uname -m)" ]; then
+    if [ "${build_all}" == "true" ] || [ ! -f "${DOWNLOAD_FILE}" ]; then
         local proxy_url="https://gh.llkk.cc"
         if [ "$download_proxy" == "true" ]; then
             SMARTDNS_DOWNLOAD_URL=${proxy_url}/${SMARTDNS_DOWNLOAD_URL}

@@ -91,11 +91,18 @@ install_smartdns_version() {
     log_msg "安装smartdns ${smartdns_version}版本完成"
 }
 
-update_config "log-level" "${smartdns_log_level}" "enable"
-log_msg "设置日志级别: ${smartdns_log_level}"
-update_config "bind" "[::]:${smartdns_dns_port}" "enable"
-log_msg "设置DNS监听端口: ${smartdns_dns_port}"
-update_ui_config
-install_smartdns_version
+if [ -n "${wizard_enable_config}" ] && [ "${wizard_enable_config}" = "true" ]; then
+    log_msg "启用向导配置，覆盖配置文件"
+    # 向导配置覆盖安装后默认配置
+    update_config "log-level" "${smartdns_log_level}" "enable"
+    log_msg "设置日志级别: ${smartdns_log_level}"
+    update_config "bind" "[::]:${smartdns_dns_port}" "enable"
+    log_msg "设置DNS监听端口: ${smartdns_dns_port}"
+    update_ad_config
+    update_ui_config
+    install_smartdns_version
+else
+    log_msg "不启用向导配置，保持原有配置文件不变"
+fi
 
 exit 0

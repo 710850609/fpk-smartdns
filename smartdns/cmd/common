@@ -95,11 +95,32 @@ update_ui_config() {
     chmod -R a+r "${TRIM_APPDEST}/bin/wwwroot" || alarm_and_exit "设置 UI 前端目录读取权限失败"
 
     log_msg "设置WebUI端口: ${smartdns_ui_port}"
-    update_config "smartdns-ui.ip" "http://0.0.0.0:${smartdns_ui_port}" "${enable_ui}" || alarm_and_exit "更新 smartdns-ui.ip 配置失败"
+    update_config "smartdns-ui.ip" "http://[::]:${smartdns_ui_port}" "${enable_ui}" || alarm_and_exit "更新 smartdns-ui.ip 配置失败"
 
     log_msg "设置WebUI账号: ${smartdns_ui_user}"
     update_config "smartdns-ui.user" "${smartdns_ui_user}" "${enable_ui}" || alarm_and_exit "更新 smartdns-ui.user 配置失败"
 
     log_msg "设置WebUI密码: ${smartdns_ui_password}"
     update_config "smartdns-ui.password" "${smartdns_ui_password}" "${enable_ui}" || alarm_and_exit "更新 smartdns-ui.password 配置失败"
+}
+
+update_ad_config() {
+    local enable_ad="enable"
+    if [ "${smartdns_ad_enable}" == "true" ]; then
+        enable_ad="enable"
+        # 下载最新屏蔽广告规则 
+        # https://anti-ad.net/anti-ad-for-smartdns.conf
+        wget -O "${SHARE_DIR}/ad-anti-ad-for-smartdns.conf" https://anti-ad.net/anti-ad-for-smartdns.conf || alarm_and_exit "下载广告规则失败，地址:https://anti-ad.net/anti-ad-for-smartdns.conf"
+        log_msg "下载广告规则成功，地址:https://anti-ad.net/anti-ad-for-smartdns.conf"
+        # https://adrules.top/smart-dns.conf
+        wget -O "${SHARE_DIR}/ad-smart-dns.conf" https://adrules.top/smart-dns.conf || alarm_and_exit "下载广告规则失败,地址:https://adrules.top/smart-dns.conf"
+        log_msg "下载广告规则成功，地址:https://adrules.top/smart-dns.conf"
+        # https://neodev.team/smartdns.conf
+        wget -O "${SHARE_DIR}/ad-smartdns.conf" https://neodev.team/smartdns.conf || alarm_and_exit "下载广告规则失败,地址:https://neodev.team/smartdns.conf"
+        log_msg "下载广告规则成功，地址:https://neodev.team/smartdns.conf"
+    else
+        enable_ad="disable"
+    fi
+    log_msg "设置启用广告屏蔽: ${enable_ad}"
+    update_config "conf-file" "ad-*.conf" "${enable_ad}" || alarm_and_exit "更新 smartdns-ad.conf 配置失败"
 }

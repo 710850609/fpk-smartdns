@@ -27,6 +27,16 @@
         "stepTitle": "运行配置",
         "items": [
             {
+                "type": "switch",
+                "field": "wizard_enable_config",
+                "label": "使用向导配置",
+                "initValue": "true"
+            },
+            {
+                "type": "tips",
+                "helpText": "<p>启用后将使用下面的设置覆盖配置文件(合适快速上手)</p><p>不启用则不下面配置(适合自定义配置的用户)</p>"
+            },
+            {
                 "type": "text",
                 "field": "smartdns_dns_port",
                 "label": "DNS服务端口",
@@ -42,6 +52,16 @@
                     }
                 ]
             },
+            {
+                "type": "switch",
+                "field": "smartdns_ad_enable",
+                "label": "启用广告屏蔽",
+                "initValue": "true"
+            },
+            {
+                "type": "tips",
+                "helpText": "<p>仅保存设置时，会下载最新规则，其他时间不会自动更新</p><p>使用SmartDNS官网推荐的屏蔽广告来源: <a href='https://github.com/privacy-protection-tools/anti-AD' target='_blank'>anti-AD</a>, <a href='https://anti-ad.net/anti-ad-for-smartdns.conf' target='_blank'>neodevhost</a>, <a href='https://adrules.top/smart-dns.conf' target='_blank'>adrules</a></p>"
+            },  
             {
                 "type": "switch",
                 "field": "smartdns_ui_enabled",
@@ -93,6 +113,52 @@
                         "message": "密码长度不能少于3位"
                     }
                 ]
+            },      
+            {
+                "type": "select",
+                "field": "smartdns_log_level",
+                "label": "日志等级",
+                "initValue": "info",
+                "options": [
+                {
+                    "label": "off",
+                    "value": "off"
+                },
+                {
+                    "label": "fatal",
+                    "value": "fatal"
+                },
+                {
+                    "label": "error",
+                    "value": "error"
+                },
+                {
+                    "label": "warn",
+                    "value": "warn"
+                },
+                {
+                    "label": "notice",
+                    "value": "notice"
+                },
+                {
+                    "label": "info",
+                    "value": "info"
+                },
+                {
+                    "label": "debug",
+                    "value": "debug"
+                }
+                ],
+                "rules": [
+                {
+                    "required": true,
+                    "message": "请选择日志等级"
+                }
+                ]
+            },
+            {
+                "type": "tips",
+                "helpText": "<p>推荐info</p>按顺序依次产生的日志增多、详细: off < fatal < error < warn < notice < info < debug"
             }
         ]
     }
