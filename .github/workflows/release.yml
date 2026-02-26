@@ -164,15 +164,13 @@ jobs:
         run: |
           new_version="${{ needs.build-multi-arch.outputs.release_version }}"
           changelog="${{ needs.build-multi-arch.outputs.release_notes }}"
-          
-          https://github.com/710850609/fpk-smartdns/releases/download/release%2F47.1-004/smartdns-47.1-004-x86.fpk
-
+        
           gh workflow run update-version.yml \
             --repo "710850609/FnDepot" \
             -f app_name="SmartDNS" \
             -f new_version="$new_version" \
-            -f download_url_amd64="https://github.com/710850609/fpk-smartdns/releases/download/$new_version/smartdns-$new_version-x86.fpk" \
-            -f download_url_aarch64="https://github.com/710850609/fpk-smartdns/releases/download/$new_version/smartdns-$new_version-arm.fpk" \
+            -f download_url_amd64="https://github.com/710850609/fpk-smartdns/releases/download/${new_version}/smartdns-${new_version}-x86.fpk" \
+            -f download_url_aarch64="https://github.com/710850609/fpk-smartdns/releases/download/${new_version}/smartdns-${new_version}-arm.fpk" \
             -f changelog="$changelog"
         env:
           GH_TOKEN: ${{ secrets.FNDEPOT_TOKEN }}          
