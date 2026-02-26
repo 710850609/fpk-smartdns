@@ -20,11 +20,11 @@ jobs:
           REAL_VERSION=$(curl -s https://api.github.com/repos/pymumu/smartdns/releases/latest | jq -r .tag_name | sed 's/^Release//')
           echo "获取最新版本: $REAL_VERSION"
           echo "version=$REAL_VERSION" >> $GITHUB_OUTPUT
-          if git ls-remote --tags origin "refs/tags/release/$REAL_VERSION*" | grep -q .; then
-            echo "存在 release/$REAL_VERSION 开头的 tag"
+          if git ls-remote --tags origin "refs/tags/$REAL_VERSION*" | grep -q .; then
+            echo "存在 $REAL_VERSION 开头的 tag"
             echo "trigger=false" >> $GITHUB_OUTPUT
           else
-            echo "不存在 release/$REAL_VERSION 开头的 tag"
+            echo "不存在 $REAL_VERSION 开头的 tag"
             echo "trigger=true" >> $GITHUB_OUTPUT
           fi
 
