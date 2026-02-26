@@ -72,15 +72,6 @@ jobs:
           mkdir -p release
           cp "$FPK_FILE" "release/$FPK_FILE"
           echo "准备完成: $FPK_FILE"
-          # if [ "${{ needs.setup.outputs.prerelease }}" == "true" ]; then
-          #   cp "$FPK_FILE" "release/$FPK_FILE"
-          #   echo "准备完成: $FPK_FILE"
-          # else
-          #   # 正式版去除版本号
-          #   NEW_FPK_NAME="smartdns-${{ matrix.arch }}.fpk"
-          #   cp "$FPK_FILE" "release/$NEW_FPK_NAME"
-          #   echo "准备完成: $NEW_FPK_NAME"
-          # fi
 
       - name: Get release version
         id: release-version
@@ -96,6 +87,22 @@ jobs:
           version=$(sed -n 's/^[[:space:]]*version[[:space:]]*=[[:space:]]*//p' ./smartdns/manifest | sed 's/^"\|"$//g')
           echo "构建FPK版本: $version"
           echo "version=$version" >> $GITHUB_OUTPUT
+          
+          if [[ "${{ needs.setup.outputs.prerelease }}" == "true" ]]; then
+            echo "release_notes=''" >> $GITHUB_OUTPUT
+          else
+            awk -v ver="$release_version" '
+                $0 ~ "^## " ver { found=1; next }
+                found && $0 ~ "^## " { exit }
+                found { print }
+              ' "${{ github.workspace }}/CHANGELOG.md" > release_notes.txt
+            # 检查是否提取到内容
+            if [ ! -s release_notes.txt ]; then
+              echo "- 更新SmartDNS版本" > release_notes.txt
+            fi
+            echo "更新日志: $(cat release_notes.txt)"
+            echo "release_notes=$(cat release_notes.txt)" >> $GITHUB_OUTPUT
+          fi
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -146,3 +153,21 @@ jobs:
           echo "包含的文件:"
           ls -la combined-release/
           echo "================"
+
+      - name: Push FnDepot
+        if: ${{ needs.setup.outputs.prerelease == 'false' }}
+        run: |
+          new_version="${{ needs.build-multi-arch.outputs.release_version }}"
+          changelog="${{ needs.build-multi-arch.outputs.release_notes }}"
+          
+          https://github.com/710850609/fpk-smartdns/releases/download/release%2F47.1-004/smartdns-47.1-004-x86.fpk
+
+          gh workflow run update-version.yml \
+            --repo "710850609/FnDepot" \
+            -f app_name="SmartDNS" \
+            -f new_version="$new_version" \
+            -f download_url_amd64="https://github.com/710850609/fpk-smartdns/releases/download/$new_version/smartdns-$new_version-x86.fpk" \
+            -f download_url_aarch64="https://github.com/710850609/fpk-smartdns/releases/download/$new_version/smartdns-$new_version-arm.fpk" \
+            -f changelog="$changelog"
+        env:
+          GH_TOKEN: ${{ secrets.FNDEPOT_TOKEN }}          
