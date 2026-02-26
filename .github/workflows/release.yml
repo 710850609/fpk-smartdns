@@ -14,6 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       prerelease: ${{ steps.set-prerelease.outputs.prerelease }}
+      release_notes: ${{ steps.release-info.outputs.release_notes }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
