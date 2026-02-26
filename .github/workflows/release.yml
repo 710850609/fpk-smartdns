@@ -91,7 +91,7 @@ jobs:
           if [[ "${{ needs.setup.outputs.prerelease }}" == "true" ]]; then
             echo "release_notes=''" >> $GITHUB_OUTPUT
           else
-            awk -v ver="$release_version" '
+            awk -v ver="$version" '
                 $0 ~ "^## " ver { found=1; next }
                 found && $0 ~ "^## " { exit }
                 found { print }
