@@ -156,7 +156,7 @@ jobs:
           echo "代码分支/标签: ${{ needs.build-multi-arch.outputs.release_version }}"
           echo "版本:  ${{ needs.build-multi-arch.outputs.release_version }}"
           echo "预发布: ${{ needs.setup.outputs.prerelease }}"
-          echo "变更日志: ${{ needs.build-multi-arch.outputs.release_notes }}""
+          echo "变更日志: ${{ needs.build-multi-arch.outputs.release_notes }}"
           echo "包含的文件:"
           ls -la combined-release/
           echo "================"
