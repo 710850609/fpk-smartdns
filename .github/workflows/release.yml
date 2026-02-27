@@ -14,7 +14,6 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       prerelease: ${{ steps.set-prerelease.outputs.prerelease }}
-      release_notes: ${{ steps.release-info.outputs.release_notes }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -41,7 +40,8 @@ jobs:
   build-multi-arch:
     needs: setup
     outputs:
-      release_version: ${{ steps.release-version.outputs.version }}
+      release_version: ${{ steps.release-info.outputs.version }}      
+      release_notes: ${{ steps.release-info.outputs.release_notes }}
     strategy:
       matrix:
         include:
@@ -74,8 +74,8 @@ jobs:
           cp "$FPK_FILE" "release/$FPK_FILE"
           echo "准备完成: $FPK_FILE"
 
-      - name: Get release version
-        id: release-version
+      - name: Get Release Info
+        id: release-info
         run: |
           FPK_FILE=$(ls *.fpk 2>/dev/null | head -1)
           if [ -z "$FPK_FILE" ]; then
@@ -142,10 +142,11 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           name: ${{ needs.build-multi-arch.outputs.release_version }}
-          tag: "${{ needs.build-multi-arch.outputs.release_version }}"
+          tag: 
           artifacts: "combined-release/*"
           prerelease: ${{ needs.setup.outputs.prerelease }}
           skipIfReleaseExists: true
+          body: "${{ needs.build-multi-arch.outputs.release_notes }}"
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload release summary
@@ -155,6 +156,7 @@ jobs:
           echo "代码分支/标签: ${{ needs.build-multi-arch.outputs.release_version }}"
           echo "版本:  ${{ needs.build-multi-arch.outputs.release_version }}"
           echo "预发布: ${{ needs.setup.outputs.prerelease }}"
+          echo "变更日志: ${{ needs.build-multi-arch.outputs.release_notes }}""
           echo "包含的文件:"
           ls -la combined-release/
           echo "================"
