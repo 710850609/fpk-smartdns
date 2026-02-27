@@ -1,8 +1,8 @@
 #!/bin/bash
 
 ### This script is called after the user installs the application.
-
-source "$(dirname ${BASH_SOURCE[0]})/common"
+set -e
+source "/var/apps/${TRIM_APPNAME}/cmd/common"
 
 ensure_exists_cfg_file() {
     if [ ! -f "${CFG_FILE}" ]; then
@@ -29,6 +29,10 @@ unpack_bin() {
 }
 
 unpack_bin
+if [ "${TRIM_APP_STATUS}" == "UPGRADE" ]; then
+    log_msg "升级时，不修改配置"
+    exit 0
+fi
 ensure_exists_cfg_file
 # 设置日志文件路径、缓存文件路径 到应用专属动态数据目录
 update_config "data-dir" "${DATA_DIR}" "enable"

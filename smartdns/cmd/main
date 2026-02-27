@@ -1,6 +1,6 @@
 #!/bin/bash
-
-source "$(dirname ${BASH_SOURCE[0]})/common"
+set -e
+source "/var/apps/${TRIM_APPNAME}/cmd/common"
 
 PID_FILE="${TRIM_PKGVAR}/app.pid"
 

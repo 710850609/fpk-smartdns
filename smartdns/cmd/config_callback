@@ -1,8 +1,8 @@
 #!/bin/bash
 
 ### This script is called after the user change environment variables in application setting page.
-set -e  # 遇到任何命令失败时立即终止脚本
-source "$(dirname ${BASH_SOURCE[0]})/common"
+set -e
+source "/var/apps/${TRIM_APPNAME}/cmd/common"
 
 get_smartdns_version() {
     local bin_dir="${TRIM_APPDEST}/bin"

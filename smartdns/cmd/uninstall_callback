@@ -1,8 +1,8 @@
 #!/bin/bash
 
 ### This script is called after the user uninstalls the application.
-
-source "$(dirname ${BASH_SOURCE[0]})/common"
+set -e
+source "/var/apps/${TRIM_APPNAME}/cmd/common"
 
 log_msg "卸载删除前端目录"
 rm -rf "/usr/share/smartdns" >> ${LOG_FILE} 2>&1 || alarm_and_exit "无法删除前端目录: /usr/share/smartdns"
