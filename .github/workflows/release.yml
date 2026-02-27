@@ -142,7 +142,7 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           name: ${{ needs.build-multi-arch.outputs.release_version }}
-          tag: 
+          tag: "${{ needs.build-multi-arch.outputs.release_version }}"
           artifacts: "combined-release/*"
           prerelease: ${{ needs.setup.outputs.prerelease }}
           skipIfReleaseExists: true
