@@ -100,7 +100,7 @@ if [ -n "${wizard_enable_config}" ] && [ "${wizard_enable_config}" = "true" ]; t
     log_msg "设置DNS监听端口: ${smartdns_dns_port}"
     update_ad_config
     update_ui_config
-    install_smartdns_version
+#    install_smartdns_version
 else
     log_msg "不启用向导配置，保持原有配置文件不变"
 fi

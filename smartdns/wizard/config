@@ -42,32 +42,6 @@
       {
         "type": "tips",
         "helpText": "<p>仅保存设置时，会下载最新规则，其他时间不会自动更新</p><p>使用SmartDNS官网推荐的屏蔽广告来源: <a href='https://github.com/privacy-protection-tools/anti-AD' target='_blank'>anti-AD</a>, <a href='https://anti-ad.net/anti-ad-for-smartdns.conf' target='_blank'>neodevhost</a>, <a href='https://adrules.top/smart-dns.conf' target='_blank'>adrules</a></p>"
-      },
-      {
-        "type": "text",
-        "field": "smartdns_version",
-        "label": "SmartDNS版本",
-        "initValue": "47.1",
-        "rules": [
-          {
-            "required": true,
-            "message": "请输入安装版本，如 47.1"
-          }
-        ]
-      },
-      {
-        "type": "tips",
-        "helpText": "修改版本请确认与当前版本配置的兼容性，避免无法启动服务。<a href=\"https://github.com/pymumu/smartdns/releases\" target=\"_blank\">官方所有版本</a>"
-      },
-      {
-        "type": "text",
-        "field": "download_proxy_url",
-        "label": "GitHub下载加速地址",
-        "initValue": "https://gh.llkk.cc"
-      },
-      {
-        "type": "tips",
-        "helpText": "如下载速度较慢，可尝试更换其他加速地址。如不需要，则留空不填"
       }
     ]
   },

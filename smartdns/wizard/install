@@ -118,7 +118,7 @@
                 "type": "select",
                 "field": "smartdns_log_level",
                 "label": "日志等级",
-                "initValue": "info",
+                "initValue": "warn",
                 "options": [
                 {
                     "label": "off",
